@@ -16,29 +16,13 @@ def create_producer():
         Producer: Instancia de Producer configurada.
         None: Si ocurre un error durante la creación del productor.
     """
-    if Config.KAFKA_SECURITY_PROTOCOL.upper() == "SASL_SSL":
-        missing = []
-        if not Config.KAFKA_SASL_USERNAME:
-            missing.append("KAFKA_SASL_USERNAME")
-        if not Config.KAFKA_SASL_PASSWORD:
-            missing.append("KAFKA_SASL_PASSWORD")
-        if missing:
-            logger.error(f"Kafka SASL/SSL habilitado pero faltan variables: {', '.join(missing)}")
     conf = {
         'bootstrap.servers': Config.KAFKA_BOOTSTRAP_SERVERS,
         'security.protocol': Config.KAFKA_SECURITY_PROTOCOL,
         'sasl.mechanisms': Config.KAFKA_SASL_MECHANISMS,
         'sasl.username': Config.KAFKA_SASL_USERNAME,
         'sasl.password': Config.KAFKA_SASL_PASSWORD,
-        # Robustness for cloud providers
-        'client.dns.lookup': 'use_all_dns_ips',
-        'broker.address.family': 'v4',
     }
-    if Config.KAFKA_SECURITY_PROTOCOL.upper() == "SASL_SSL":
-        # Let librdkafka use system CA bundle installed in Dockerfile
-        conf['ssl.ca.location'] = '/etc/ssl/certs/ca-certificates.crt'
-    if Config.KAFKA_DEBUG:
-        conf['debug'] = Config.KAFKA_DEBUG
     try:
         producer = Producer(conf)
         logger.info("Kafka Producer creado.")
@@ -70,13 +54,7 @@ def create_consumer(topic):
         'sasl.mechanisms': Config.KAFKA_SASL_MECHANISMS,
         'sasl.username': Config.KAFKA_SASL_USERNAME,
         'sasl.password': Config.KAFKA_SASL_PASSWORD,
-        'client.dns.lookup': 'use_all_dns_ips',
-        'broker.address.family': 'v4',
     }
-    if Config.KAFKA_SECURITY_PROTOCOL.upper() == "SASL_SSL":
-        conf['ssl.ca.location'] = '/etc/ssl/certs/ca-certificates.crt'
-    if Config.KAFKA_DEBUG:
-        conf['debug'] = Config.KAFKA_DEBUG
     try:
         consumer = Consumer(conf)
         consumer.subscribe([topic])

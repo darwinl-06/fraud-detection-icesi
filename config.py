@@ -16,4 +16,3 @@ class Config:
     KAFKA_SASL_PASSWORD = os.getenv("KAFKA_SASL_PASSWORD")
     KAFKA_TOPIC_INPUT = os.getenv("KAFKA_TOPIC_INPUT", "transactions_stream")
     KAFKA_TOPIC_OUTPUT = os.getenv("KAFKA_TOPIC_OUTPUT", "fraud_predictions")
-    KAFKA_DEBUG = os.getenv("KAFKA_DEBUG")  # e.g. 'security,broker,protocol' for troubleshooting
